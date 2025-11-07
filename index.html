@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>📐 Area Conversion Challenge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg,#89f7fe,#66a6ff);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  #game, #resultScreen {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    padding: 28px;
+    width: 760px;
+    max-width: 96%;
+    text-align: left;
+    display: none;
+    flex-direction: column;
+    gap: 18px;
+  }
+  h1 {
+    font-size: 28px;
+    background: linear-gradient(90deg,#ff512f,#dd2476);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    font-weight:800;
+    margin:0 0 12px 0;
+    text-align:center;
+  }
+  .question {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 6px 0;
+  }
+  input.answerInput {
+    width: 120px;
+    padding:6px 8px;
+    font-size:16px;
+    margin-left: 8px;
+  }
+  button {
+    padding:10px 16px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+    background:linear-gradient(135deg,#f6d365,#fda085);
+    color:#111;
+    font-weight:600;
+  }
+  button:hover { transform: translateY(-2px); }
+  .feedback {
+    font-weight:700;
+    margin-top:6px;
+  }
+  .correct { color:green; }
+  .wrong { color:red; }
+</style>
+</head>
+<body>
+
+<div id="game">
+  <h1>📐 Area Conversion Challenge</h1>
+  <form id="worksheetForm"></form>
+  <button type="button" onclick="submitWorksheet()">Submit Answers</button>
+</div>
+
+<div id="resultScreen">
+  <h1>📊 Your Results</h1>
+  <div id="feedback"></div>
+  <div style="margin-top:16px;">
+    <button onclick="restartWorksheet()">Restart Worksheet</button>
+  </div>
+</div>
+
+<script>
+// Pool of area conversion questions
+const questionPool = [
+  {q:"Convert 3.5 km² to m²:", a:3500000, unit:"m²"},
+  {q:"Convert 1200 m² to ha:", a:0.12, unit:"ha"},
+  {q:"Convert 45000 cm² to m²:", a:4.5, unit:"m²"},
+  {q:"Convert 0.75 ha to m²:", a:7500, unit:"m²"},
+  {q:"Convert 2500 mm² to cm²:", a:25, unit:"cm²"},
+  {q:"Convert 8.2 km² to m²:", a:8200000, unit:"m²"},
+  {q:"Convert 3.6 m² to cm²:", a:36000, unit:"cm²"},
+  {q:"Convert 0.02 km² to m²:", a:20000, unit:"m²"},
+  {q:"Convert 5000 cm² to m²:", a:0.5, unit:"m²"},
+  {q:"Convert 7 ha to m²:", a:70000, unit:"m²"},
+  {q:"Convert 15 m² to cm²:", a:150000, unit:"cm²"},
+  {q:"Convert 0.5 m² to mm²:", a:500000, unit:"mm²"},
+  {q:"Convert 250 cm² to mm²:", a:25000, unit:"mm²"},
+  {q:"Convert 0.08 km² to m²:", a:80000, unit:"m²"},
+  {q:"Convert 1200 mm² to cm²:", a:12, unit:"cm²"}
+];
+
+let currentQuestions = [];
+
+function shuffleArray(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
+
+function generateWorksheet(){
+  const form = document.getElementById('worksheetForm');
+  form.innerHTML = '';
+  shuffleArray(questionPool);
+  currentQuestions = questionPool.slice(0,10); // pick 10 random questions
+
+  currentQuestions.forEach((q,i)=>{
+    const div = document.createElement('div');
+    div.className='question';
+    div.innerHTML = `${i+1}. ${q.q} <input type="number" class="answerInput" name="q${i+1}" placeholder="${q.unit}">`;
+    form.appendChild(div);
+  });
+}
+
+function submitWorksheet(){
+  const form = document.getElementById('worksheetForm');
+  const feedbackEl = document.getElementById('feedback');
+  let score = 0;
+  feedbackEl.innerHTML = '';
+
+  currentQuestions.forEach((q,i)=>{
+    const val = parseFloat(form[`q${i+1}`].value);
+    const correctClass = (val === q.a) ? 'correct' : 'wrong';
+    if(val === q.a) score++;
+    feedbackEl.innerHTML += `<div class="${correctClass}">${i+1}. Your answer: ${val || 'N/A'} → Correct: ${q.a} ${q.unit}</div>`;
+  });
+
+  feedbackEl.innerHTML += `<h3>✅ Total Score: ${score} / 10</h3>`;
+  document.getElementById('game').style.display='none';
+  document.getElementById('resultScreen').style.display='flex';
+}
+
+function restartWorksheet(){
+  generateWorksheet();
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('game').style.display='flex';
+}
+
+// Initialize first worksheet
+generateWorksheet();
+document.getElementById('game').style.display='flex';
+</script>
+
+</body>
+</html>
